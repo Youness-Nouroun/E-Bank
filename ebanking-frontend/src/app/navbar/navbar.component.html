@@ -1,0 +1,100 @@
+<nav class="navbar navbar-expand-lg navbar-dark shadow-lg" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); min-height: 80px;">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold fs-2 text-white" href="#" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 2px;">
+      <i class="bi bi-bank2 me-2 text-warning"></i>E-BANK
+    </a>
+    <button class="navbar-toggler border-0 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item mx-2">
+          <a class="nav-link active fw-semibold px-3 py-2 rounded-pill" aria-current="page" href="#" 
+             style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">
+            <i class="bi bi-house-door me-2"></i>Home
+          </a>
+        </li>
+        <li class="nav-item mx-2">
+          <a class="nav-link fw-semibold px-3 py-2 rounded-pill transition-all" routerLink="/admin/accounts"
+             style="transition: all 0.3s ease;">
+            <i class="bi bi-credit-card me-2"></i>Accounts
+          </a>
+        </li>
+        <li class="nav-item dropdown mx-2">
+          <a class="nav-link dropdown-toggle fw-semibold px-3 py-2 rounded-pill" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+             style="transition: all 0.3s ease;">
+            <i class="bi bi-people me-2"></i>Customers
+          </a>
+          <ul class="dropdown-menu border-0 shadow-lg mt-2" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 15px;" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item py-2 px-3 fw-medium" routerLink="/admin/customers">
+              <i class="bi bi-search me-2 text-primary"></i>Search customers
+            </a></li>
+            <li *ngIf="authService.roles.includes('ADMIN')">
+              <a class="dropdown-item py-2 px-3 fw-medium" routerLink="/admin/new-customer">
+                <i class="bi bi-person-plus me-2 text-success"></i>New customer
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      
+      <!-- User Info & Actions -->
+      <div class="d-flex align-items-center gap-3">
+        <!-- Search Form -->
+        <form class="d-flex me-3">
+          <div class="input-group">
+            <input class="form-control border-0 shadow-sm" type="search" placeholder="Search..." aria-label="Search"
+                   style="background: rgba(255,255,255,0.9); border-radius: 25px 0 0 25px; min-width: 200px;">
+            <button class="btn btn-warning border-0 shadow-sm fw-semibold" type="submit"
+                    style="border-radius: 0 25px 25px 0; padding: 0 20px;">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+
+        <!-- User Info -->
+        <div *ngIf="authService.isAuthenticated" class="d-flex align-items-center bg-white bg-opacity-20 rounded-pill px-3 py-2 me-2">
+          <i class="bi bi-person-circle me-2 fs-5 text-warning"></i>
+          <span class="text-black fw-semibold">{{this.authService.username}}</span>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="btn btn-danger shadow-sm fw-semibold px-4 py-2" (click)="handleLogout()"
+                style="border-radius: 25px; transition: all 0.3s ease; border: 2px solid transparent;">
+          <i class="bi bi-box-arrow-right me-2"></i>Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+.nav-link:hover {
+  background: rgba(255,255,255,0.2) !important;
+  backdrop-filter: blur(10px);
+  transform: translateY(-2px);
+}
+
+.dropdown-item:hover {
+  background: rgba(0,123,255,0.1) !important;
+  transform: translateX(5px);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220,53,69,0.3) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+
+.btn-warning:hover {
+  transform: scale(1.05);
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+.input-group input:focus {
+  box-shadow: 0 0 0 3px rgba(255,193,7,0.3) !important;
+}
+</style>

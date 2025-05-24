@@ -1,0 +1,290 @@
+<div class="container-fluid mt-4 px-4">
+  <div class="row g-4">
+    <!-- Account Search & Details Section -->
+    <div class="col-12 col-lg-7">
+      <div class="card shadow-lg border-0" style="border-radius: 20px;">
+        <div class="card-header bg-gradient text-white py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px 20px 0 0;">
+          <h3 class="mb-0 fw-bold">
+            <i class="bi bi-credit-card-2-front me-3"></i>
+            Détails du Compte
+          </h3>
+        </div>
+        <div class="card-body p-4">
+          <!-- Search Form -->
+          <div class="mb-4">
+            <form [formGroup]="accountFormGroup" (ngSubmit)="handleSearchAccount()">
+              <div class="input-group input-group-lg shadow-sm" style="border-radius: 15px;">
+                <span class="input-group-text bg-primary text-white fw-bold border-0" style="border-radius: 15px 0 0 15px;">
+                  <i class="bi bi-credit-card me-2"></i>Account ID
+                </span>
+                <input type="text" 
+                       formControlName="accountId" 
+                       class="form-control border-0 fs-5" 
+                       placeholder="Entrez l'ID du compte..."
+                       style="border-radius: 0;">
+                <button class="btn btn-warning border-0 fw-bold px-4" 
+                        type="submit"
+                        style="border-radius: 0 15px 15px 0; transition: all 0.3s ease;">
+                  <i class="bi bi-search me-2"></i>Rechercher
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Error/Loading Template -->
+          <ng-template #errorTemplate>
+            <ng-container *ngIf="errorMessage; else loading">
+              <div class="alert alert-danger border-0 shadow-sm p-4" style="border-radius: 15px;">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-exclamation-triangle-fill fs-3 text-danger me-3"></i>
+                  <div>
+                    <h5 class="fw-bold mb-1">Erreur</h5>
+                    <p class="mb-0">{{errorMessage}}</p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #loading>
+              <div class="alert alert-info border-0 shadow-sm p-4" style="border-radius: 15px;">
+                <div class="d-flex align-items-center justify-content-center">
+                  <div class="spinner-border text-info me-3" role="status"></div>
+                  <span class="fw-semibold">Chargement des données...</span>
+                </div>
+              </div>
+            </ng-template>
+          </ng-template>
+
+          <!-- Account Details -->
+          <ng-container *ngIf="accountObservable | async as accountDetails">
+            <!-- Account Info Cards -->
+            <div class="row mb-4">
+              <div class="col-md-6 mb-3">
+                <div class="card bg-primary bg-opacity-10 border-0 h-100" style="border-radius: 15px;">
+                  <div class="card-body text-center p-4">
+                    <i class="bi bi-credit-card display-4 text-primary mb-3"></i>
+                    <h6 class="text-muted text-uppercase fw-semibold mb-2">Account ID</h6>
+                    <h3 class="fw-bold text-primary mb-0">{{accountDetails.accountId}}</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="card bg-success bg-opacity-10 border-0 h-100" style="border-radius: 15px;">
+                  <div class="card-body text-center p-4">
+                    <i class="bi bi-wallet2 display-4 text-success mb-3"></i>
+                    <h6 class="text-muted text-uppercase fw-semibold mb-2">Solde</h6>
+                    <h3 class="fw-bold text-success mb-0">{{accountDetails.balance | number : '1.2-2'}} €</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Operations Table -->
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+              <div class="card-header bg-light py-3" style="border-radius: 15px 15px 0 0;">
+                <h5 class="mb-0 fw-bold text-dark">
+                  <i class="bi bi-list-ul me-2 text-info"></i>
+                  Historique des Opérations
+                </h5>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th class="py-3 px-4 fw-bold text-uppercase" style="font-size: 0.85rem;">
+                          <i class="bi bi-hash text-primary me-1"></i>ID
+                        </th>
+                        <th class="py-3 px-4 fw-bold text-uppercase" style="font-size: 0.85rem;">
+                          <i class="bi bi-calendar text-info me-1"></i>Date
+                        </th>
+                        <th class="py-3 px-4 fw-bold text-uppercase" style="font-size: 0.85rem;">
+                          <i class="bi bi-tag text-warning me-1"></i>Type
+                        </th>
+                        <th class="py-3 px-4 fw-bold text-uppercase text-end" style="font-size: 0.85rem;">
+                          <i class="bi bi-currency-euro text-success me-1"></i>Montant
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let op of accountDetails.accountOperationDtos" style="transition: all 0.3s ease;">
+                        <td class="py-3 px-4">
+                          <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill">
+                            {{op.id}}
+                          </span>
+                        </td>
+                        <td class="py-3 px-4 text-muted">{{op.operationDate | date : 'dd/MM/yyyy HH:mm'}}</td>
+                        <td class="py-3 px-4">
+                          <span class="badge" 
+                                [ngClass]="op.type === 'DEBIT' ? 'bg-danger' : op.type === 'CREDIT' ? 'bg-success' : 'bg-info'"
+                                style="border-radius: 8px;">
+                            {{op.type}}
+                          </span>
+                        </td>
+                        <td class="py-3 px-4 text-end fw-bold"
+                            [ngClass]="op.type === 'DEBIT' ? 'text-danger' : 'text-success'">
+                          {{op.amount | number : '1.2-2'}} €
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+              <nav>
+                <ul class="pagination pagination-lg">
+                  <li *ngFor="let item of [].constructor(accountDetails.totalPages); let page=index" 
+                      class="page-item">
+                    <a class="page-link shadow-sm fw-semibold" 
+                       [ngClass]="page==currentPage ? 'bg-primary text-white border-primary' : 'text-primary'"
+                       (click)="gotoPage(page)"
+                       style="border-radius: 10px; margin: 0 2px; cursor: pointer; transition: all 0.3s ease;">
+                      {{page + 1}}
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operations Section -->
+    <div class="col-12 col-lg-5">
+      <div class="card shadow-lg border-0" *ngIf="accountObservable" style="border-radius: 20px;">
+        <div class="card-header bg-gradient text-white py-4" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 20px 20px 0 0;">
+          <h3 class="mb-0 fw-bold">
+            <i class="bi bi-arrow-left-right me-3"></i>
+            Nouvelle Opération
+          </h3>
+        </div>
+        <div class="card-body p-4" *ngIf="authService.roles.includes('ADMIN')">
+          <form [formGroup]="operationFromGroup" (ngSubmit)="handleAccountOperation()" method="post">
+            
+            <!-- Operation Type Selection -->
+            <div class="mb-4">
+              <h6 class="fw-bold text-muted mb-3 text-uppercase">Type d'opération</h6>
+              <div class="row g-2">
+                <div class="col-12">
+                  <div class="form-check p-3 border rounded-3 shadow-sm" style="transition: all 0.3s ease;">
+                    <input class="form-check-input" type="radio" formControlName="operationType" value="DEBIT" id="debit">
+                    <label class="form-check-label fw-semibold w-100" for="debit">
+                      <i class="bi bi-arrow-down-circle text-danger me-2"></i>
+                      DÉBIT - Retrait d'argent
+                    </label>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-check p-3 border rounded-3 shadow-sm" style="transition: all 0.3s ease;">
+                    <input class="form-check-input" type="radio" formControlName="operationType" value="CREDIT" id="credit">
+                    <label class="form-check-label fw-semibold w-100" for="credit">
+                      <i class="bi bi-arrow-up-circle text-success me-2"></i>
+                      CRÉDIT - Dépôt d'argent
+                    </label>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-check p-3 border rounded-3 shadow-sm" style="transition: all 0.3s ease;">
+                    <input class="form-check-input" type="radio" formControlName="operationType" value="TRANSFER" id="transfer">
+                    <label class="form-check-label fw-semibold w-100" for="transfer">
+                      <i class="bi bi-arrow-left-right text-info me-2"></i>
+                      VIREMENT - Transfert vers un autre compte
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Transfer Destination -->
+            <div class="mb-4" *ngIf="operationFromGroup.value.operationType=='TRANSFER'">
+              <label class="form-label fw-bold text-muted text-uppercase mb-2">
+                <i class="bi bi-credit-card me-2"></i>Compte de destination
+              </label>
+              <input type="text" 
+                     formControlName="accountDestination" 
+                     class="form-control form-control-lg shadow-sm border-0"
+                     placeholder="ID du compte destinataire"
+                     style="border-radius: 12px; background: #f8f9fa;">
+            </div>
+
+            <!-- Amount -->
+            <div class="mb-4">
+              <label class="form-label fw-bold text-muted text-uppercase mb-2">
+                <i class="bi bi-currency-euro me-2"></i>Montant
+              </label>
+              <input type="number" 
+                     formControlName="amount" 
+                     class="form-control form-control-lg shadow-sm border-0"
+                     placeholder="0.00"
+                     step="0.01"
+                     style="border-radius: 12px; background: #f8f9fa;">
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+              <label class="form-label fw-bold text-muted text-uppercase mb-2">
+                <i class="bi bi-chat-text me-2"></i>Description
+              </label>
+              <textarea formControlName="description" 
+                        class="form-control form-control-lg shadow-sm border-0"
+                        placeholder="Description de l'opération..."
+                        rows="3"
+                        style="border-radius: 12px; background: #f8f9fa; resize: none;"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" 
+                      class="btn btn-success btn-lg shadow-sm fw-bold py-3"
+                      style="border-radius: 12px; transition: all 0.3s ease;">
+                <i class="bi bi-check-circle me-2"></i>
+                Exécuter l'Opération
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.table-hover tbody tr:hover {
+  background-color: rgba(0,123,255,0.05) !important;
+  transform: translateY(-1px);
+}
+
+.form-check:hover {
+  background-color: rgba(0,123,255,0.05) !important;
+  border-color: #007bff !important;
+}
+
+.form-check-input:checked + .form-check-label {
+  color: #007bff !important;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.page-link:hover {
+  transform: translateY(-2px) !important;
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 3px rgba(40,167,69,0.25) !important;
+  border-color: #28a745 !important;
+}
+
+.spinner-border {
+  animation: spin 1s linear infinite;
+}
+</style>>
