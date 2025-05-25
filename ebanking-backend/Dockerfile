@@ -11,13 +11,14 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Config BDD
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://ebanking-postgres:5432/ebanking
-ENV SPRING_DATASOURCE_USERNAME=postgres
-ENV SPRING_DATASOURCE_PASSWORD=postgres
+# Config BDD (MySQL instead of PostgreSQL)
+ENV SPRING_DATASOURCE_URL=jdbc:mysql://ebanking-mysql:3306/ebanking_db?createDatabaseIfNotExist=true
+ENV SPRING_DATASOURCE_USERNAME=root
+ENV SPRING_DATASOURCE_PASSWORD=
 
 # Secret JWT
 ENV JWT_SECRET=8970B93C8970B93C8970B93C8970B93C8970B93C8970B93C8970B93C8970B93C
 
-EXPOSE 8080
+# Server Port (matches application.properties)
+EXPOSE 8085
 ENTRYPOINT ["java","-jar","app.jar"]
